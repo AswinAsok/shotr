@@ -35,4 +35,4 @@ If you have any questions or comments about this project, please feel free to co
 ## 🌟 About Midnight Projects
 Shotr is part of the Midnight Projects series, which is a collection of small web applications that are designed to be fun, creative, and easy to use. 
 Each project is built with a different set of technologies and has a unique set of features. 
-Check out our other projects on [your website or GitHub profile here].
+Check out our other projects on [My Github Account](https://github.com/AswinAsok).
