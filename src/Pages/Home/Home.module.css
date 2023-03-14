@@ -67,6 +67,7 @@
   margin: auto;
   margin: 2rem;
   border: 2px solid #9b96e2;
+  overflow: auto;
 }
 
 /* width greater than 500px then center the card */
@@ -74,6 +75,13 @@
   .input_container {
     display: block;
     margin: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .input_container {
+    padding: 1.75rem;
+    padding-bottom: 1.75rem;
   }
 }
 
@@ -165,7 +173,7 @@
 }
 
 .navbar_header {
-  font-color: #404040;
+  font-color: #534cb3;
 }
 
 a {
@@ -180,6 +188,22 @@ a {
   justify-content: space-between;
 }
 
-.fadeIn {
-  margin: 1rem;
+.overflow {
+  min-width: 500px;
+}
+
+
+div {
+  opacity: 0;
+  animation: fadeIn ease 0.5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

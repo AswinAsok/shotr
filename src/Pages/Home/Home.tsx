@@ -5,6 +5,20 @@ import { AiOutlineLink } from "react-icons/ai"
 
 const Home = () => {
   const [link, setLink] = useState("https://")
+  const [stars, setStars] = useState(0)
+
+  useEffect(() => {
+    axios
+      .get("https://api.github.com/repos/AswinAsok/shotr")
+      .then((response) => {
+        // handle success
+        setStars(response.data.stargazers_count)
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error)
+      })
+  }, [])
   interface ShortLink {
     short_url: string
     time: string
@@ -14,6 +28,16 @@ const Home = () => {
   useEffect(() => {
     setShortLinks(JSON.parse(localStorage.getItem("shortLinks") || "[]"))
   }, [])
+
+  const [visible, setVisible] = useState(false)
+  const [message, setMessage] = useState("")
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [visible])
 
   const shortenLink = () => {
     const encodedParams = new URLSearchParams()
@@ -38,15 +62,36 @@ const Home = () => {
           time: new Date().toString(),
         }
         localStorage.setItem("shortLinks", JSON.stringify(shortLinks))
+        setVisible(true)
+        setMessage("Link Shortened Successfully")
         setShortLinks([...shortLinks, data])
       })
       .catch(function (error) {
         console.error(error)
+        setVisible(true)
+        setMessage("Link Shortened Failed :)")
       })
   }
 
   return (
     <>
+      {visible ? (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            backgroundColor: "#534cb3",
+            color: "#fff",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+            zIndex: "9999",
+          }}
+        >
+          {message}
+        </div>
+      ) : null}
       <div className={styles.navbar}>
         <p className={styles.navbar_header}>Shotr</p>
         <p className={styles.navbar_content}>Shorten Links with Ease.</p>
@@ -63,8 +108,20 @@ const Home = () => {
               </p>
             </div>
             <div className={styles.button_container}>
-              <button className={styles.clear1_button}>Star</button>
-              <button className={styles.clear1_button}>Follow Me</button>
+              <a
+                href="https://github.com/AswinAsok/shotr"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className={styles.clear1_button}>{stars} Star</button>
+              </a>
+              <a
+                href="https://github.com/AswinAsok/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className={styles.clear1_button}>Follow Me</button>
+              </a>
             </div>
           </div>
           <div className={styles.input_container}>
@@ -95,51 +152,50 @@ const Home = () => {
                 </p>
               </div>
               <div className={styles.input_container}>
-                <div className={styles.shortlink_container}>
-                  <div className={styles.shortlink}>
-                    <b>
-                      <p className={styles.shortlink_url}>Shortened Link</p>
-                    </b>
-                    <b>
-                      <p className={styles.visit_link}>Visit Link</p>
-                    </b>
-                  </div>
-                </div>
-                <div className={styles.created_shortlink}>
-                  {shortLinks.map((shortLink) => (
-                    <div className={styles.shortlink_container}>
-                      <div className={styles.shortlink}>
-                        <p className={styles.shortlink_url}>
-                          {shortLink.short_url}
+                <div className={styles.overflow}>
+                  <div className={styles.shortlink_container}>
+                    <div className={styles.shortlink}>
+                      <b>
+                        <p className={styles.shortlink_header}>
+                          Shortened Link
                         </p>
-                        {/* <p className={styles.shortlink_time}>
-                          {new Date(shortLink.time)
-                            .toLocaleString("en-US", {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              timeZone: "UTC",
-                              timeZoneName: "short",
-                            })
-                            .replace("GMT", "")}
-                        </p> */}
-                        <a
-                          href={shortLink.short_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <p className={styles.visit_link}>Visit Link</p>
-                        </a>
-                      </div>
+                      </b>
+                      <b>
+                        <p className={styles.visit_link_header}>Created at</p>
+                      </b>
                     </div>
-                  ))}
+                  </div>
+                  <div className={styles.created_shortlink}>
+                    {shortLinks.map((shortLink) => (
+                      <div className={styles.shortlink_container}>
+                        <div className={styles.shortlink}>
+                          <p className={styles.shortlink_url}>
+                            {shortLink.short_url}
+                          </p>
+                          <p className={styles.shortlink_time}>
+                            {new Date(shortLink.time)
+                              .toLocaleString("en-US", {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                timeZone: "GMT",
+                                timeZoneName: "short",
+                              })
+                              .replace("GMT", "")}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setShortLinks([])
                   localStorage.removeItem("shortLinks")
+                  setVisible(true)
+                  setMessage("Memory Cleared!")
                 }}
                 className={styles.clear_button}
               >
