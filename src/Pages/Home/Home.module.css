@@ -220,3 +220,22 @@ div {
   text-align: center;
   margin-bottom: 2rem;
 }
+
+@media (max-width: 700px) {
+  .input_container {
+    max-width: 350px;
+    display: block;
+    margin: auto;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .input_container {
+    max-width: 18rem;
+    display: block;
+    margin: auto;
+    margin-top: 2rem;
+  }
+}
+
