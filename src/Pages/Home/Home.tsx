@@ -73,7 +73,7 @@ const Home = () => {
         setVisible(true)
         setMessage("Link Shortened Successfully")
         setCopyLink(response.data.result_url)
-        // confetti()
+        confetti()
       })
       .catch(function (error) {
         console.error(error)
