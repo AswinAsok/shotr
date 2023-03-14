@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react"
 import styles from "./Home.module.css"
 import axios from "axios"
 import { AiOutlineLink } from "react-icons/ai"
-
+import confetti from "canvas-confetti"
 const Home = () => {
   const [link, setLink] = useState("https://")
   const [stars, setStars] = useState(0)
+
+  const [copyLink, setCopyLink] = useState("")
 
   useEffect(() => {
     axios
@@ -26,6 +28,7 @@ const Home = () => {
   const [shortLinks, setShortLinks] = useState([] as ShortLink[])
 
   useEffect(() => {
+    console.log(localStorage.getItem("shortLinks"))
     setShortLinks(JSON.parse(localStorage.getItem("shortLinks") || "[]"))
   }, [])
 
@@ -39,6 +42,10 @@ const Home = () => {
     return () => clearTimeout(timer)
   }, [visible])
 
+  useEffect(() => {
+    localStorage.setItem("shortLinks", JSON.stringify(shortLinks))
+  }, [shortLinks])
+
   const shortenLink = () => {
     const encodedParams = new URLSearchParams()
     encodedParams.append("url", link)
@@ -48,7 +55,7 @@ const Home = () => {
       url: "https://url-shortener-service.p.rapidapi.com/shorten",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
-        "X-RapidAPI-Key": "16bed1b4d4msh53cc768f87b5249p16104bjsne09574bde640",
+        "X-RapidAPI-Key": `${import.meta.env.VITE_RAPIDAPI_KEY}`,
         "X-RapidAPI-Host": "url-shortener-service.p.rapidapi.com",
       },
       data: encodedParams,
@@ -61,10 +68,12 @@ const Home = () => {
           short_url: response.data.result_url,
           time: new Date().toString(),
         }
-        localStorage.setItem("shortLinks", JSON.stringify(shortLinks))
+        setShortLinks([...shortLinks, data])
+
         setVisible(true)
         setMessage("Link Shortened Successfully")
-        setShortLinks([...shortLinks, data])
+        setCopyLink(response.data.result_url)
+        confetti()
       })
       .catch(function (error) {
         console.error(error)
@@ -127,19 +136,42 @@ const Home = () => {
           <div className={styles.input_container}>
             <div className={styles.input_field_container}>
               <AiOutlineLink size={30} className={styles.input_icon} />
-              <input
-                placeholder="Enter the Link Here"
-                type="text"
-                className={styles.input_field}
-                onChange={(e) => setLink(e.target.value)}
-                value={link}
-              />
-              <button
-                onClick={() => shortenLink()}
-                className={styles.shorten_button}
-              >
-                Shorten
-              </button>
+              {copyLink.length === 0 ? (
+                <>
+                  <input
+                    placeholder="Enter the Link Here"
+                    type="text"
+                    className={styles.input_field}
+                    onChange={(e) => setLink(e.target.value)}
+                    value={link}
+                  />
+                  <button
+                    onClick={() => shortenLink()}
+                    className={styles.shorten_button}
+                  >
+                    Shorten
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    className={styles.input_field}
+                    value={copyLink}
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(copyLink)
+                      setCopyLink("")
+                      setVisible(true)
+                      setMessage("Link Copied Successfully")
+                    }}
+                    className={styles.shorten_button}
+                  >
+                    Copy
+                  </button>
+                </>
+              )}
             </div>
           </div>
           {shortLinks && shortLinks.length > 0 && (
@@ -204,6 +236,9 @@ const Home = () => {
             </div>
           )}
         </div>
+      </div>
+      <div className={styles.footer}>
+        Made by <a href="https://github.com/AswinAsok/">Aswin Asok</a> with ⚛️
       </div>
     </>
   )

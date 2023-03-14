@@ -4,6 +4,14 @@
   font-family: "Raleway", sans-serif;
 }
 
+.main_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+}
+
 .first_view_container {
   max-width: 1200px;
   display: block;
@@ -192,7 +200,6 @@ a {
   min-width: 500px;
 }
 
-
 div {
   opacity: 0;
   animation: fadeIn ease 0.5s;
@@ -206,4 +213,10 @@ div {
   100% {
     opacity: 1;
   }
+}
+
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
